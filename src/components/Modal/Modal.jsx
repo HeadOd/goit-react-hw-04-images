@@ -5,17 +5,14 @@ const modalRoot = document.querySelector('#modal-root');
 
 export class Modal extends Component {
   componentDidMount() {
-    console.log('componentDidMount');
     window.addEventListener('keydown', this.handleKeyDown)
   }
 
   componentWillUnmount() {
-    console.log('componentWillUnmount');
     window.removeEventListener('keydown', this.handleKeyDown)
   }
 
   handleKeyDown = e => {
-    console.log(e.code);
     if (e.code === 'Escape') {
       this.props.onClose();
     }
@@ -32,7 +29,6 @@ export class Modal extends Component {
       <div className="overlay" onClick={this.handleBackdropClick}>
         <div className="modal">
           <img src={this.props.bigImg} alt="" />
-          {/* {this.props.children} */}
         </div>
       </div>, 
       modalRoot,

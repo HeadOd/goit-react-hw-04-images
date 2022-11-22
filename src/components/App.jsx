@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ToastContainer } from 'react-toastify';
 import axios from "axios";
 import { toast } from 'react-toastify';
@@ -10,33 +10,38 @@ import { Modal } from "./Modal/Modal";
 import { URL, params } from "./API/API";
 import { BtnLoadMore } from "./btnLoadMore/btnLoadMore";
 
-export class App extends Component {
-  state = {
-    inputValue: '',
-    page: 0,
-    showModal: false,
-    bigImg: '',
-    isLoading: false,
-    error: null,
-    gallery: [],
-    buttonHide: 0,
-  }
+export const App = () => {
+  const [inputValue, setInputValue] = useState('');
+  const [page, setPage] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [bigImg, setBigImg] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [gallery, setGallery] = useState([]);
+  const [buttonHide, setButtonHide] = useState(0);
 
-  async componentDidUpdate(prevProps, prevState) { 
-    if (prevState.inputValue !== this.state.inputValue) {
-      this.setState({ gallery: []})
+
+  useEffect(() => {
+    console.log(inputValue);
+    setGallery([]);
+  }, [inputValue])
+
+  useEffect(() => {
+    if (!inputValue) {
+      return;
     }
-    
-    if (prevState.inputValue !== this.state.inputValue || prevState.page !== this.state.page) {
+
+    const fetchPhoto = async () => {
       try {
-        this.setState({ isLoading: true});
-        const response = await axios.get(`${URL}${params}${this.state.page}&q=${this.state.inputValue}`);
-        this.setState(({gallery}) => ({ gallery : [...gallery, ...response.data.hits]}));
+        setIsLoading(true);
+
+        const response = await axios.get(`${URL}${params}${page}&q=${inputValue}`);
+        setGallery([...gallery, ...response.data.hits]);
         const numberPageWhenButtonHide = Math.ceil(response.data.totalHits / 12);
-        this.setState({ buttonHide: numberPageWhenButtonHide });
+        setButtonHide(numberPageWhenButtonHide);
 
         if(response.data.hits.length === 0) {
-          this.setState({ gallery : []});
+          setGallery([]);
           toast.info(`За цим запитом нічого не знайдено!`, {
             hideProgressBar: false,
             closeOnClick: true,
@@ -47,65 +52,63 @@ export class App extends Component {
         })
         }
       } catch (error) {
-        this.setState({ error });
+        setError(error);
       } finally {
-        this.setState({ isLoading: false });
+        setIsLoading(false);
       }  
     }
+    fetchPhoto();
+  }, [inputValue, page]);
+
+  const handleFormSubmit = (searchValue) => {
+    setInputValue(searchValue);
+    setPage(1);
   }
 
-  LoadMore = () => {
-    this.setState({ page: this.state.page + 1 });
+  const onClick = (e) => {
+    const bigImgId = e.target.id;
+    setBigImg(bigImgId);
+    toggleModal();
   }
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }))
+  const toggleModal = () => {
+    setShowModal(!showModal);
   }
 
-  handleFormSubmit = inputValue => {
-    this.setState({ inputValue, page: 1 });
+  const LoadMore = () => {
+    setPage(page + 1);
   }
 
-  onClick = (e) => {
-    const bigImg = e.target.id;
-    this.setState({ bigImg });
-    this.toggleModal();
-  }
+  return <>
+    <Searchbar 
+    handleFormSubmit={handleFormSubmit}
+    />
+    { gallery.length > 1 && <ImageGallery 
+      onClick={onClick}
+      gallery={gallery}
+      error={error}
+    />}
 
-  render() {
-    const { gallery, isLoading, showModal, bigImg, error, buttonHide, page } = this.state;
+    {showModal && <Modal 
+    bigImg={bigImg}
+    onClose={toggleModal}
+    />}   
 
-    return <>
-      <Searchbar onSubmit={this.handleFormSubmit}/>
-      { gallery.length > 1 && <ImageGallery 
-        onClick={this.onClick}
-        gallery={gallery}
-        error={error}
-      />}
-    
-      {showModal && <Modal 
-      bigImg={bigImg}
-      onClose={this.toggleModal}/>}   
-
-      <div className='container'>
-        { gallery.length > 11 && page < buttonHide && <BtnLoadMore onClick={this.LoadMore}/>}   
-        { isLoading && <ThreeDots 
-            height="80" 
-            width="80" 
-            radius="9"
-            color="#4fa94d" 
-            ariaLabel="three-dots-loading"
-            wrapperStyle={{}}
-            wrapperClassName=""
-            visible={true}/>
-        }
-        
-      <ToastContainer position="top-right"
-        autoClose={3000} theme="dark"/>
-      </div>
-    </>
-    
-  }
-};
+    <div className='container'>
+      { gallery.length > 11 && page < buttonHide && <BtnLoadMore onClick={LoadMore}/>}   
+      { isLoading && <ThreeDots 
+          height="80" 
+          width="80" 
+          radius="9"
+          color="#4fa94d" 
+          ariaLabel="three-dots-loading"
+          wrapperStyle={{}}
+          wrapperClassName=""
+          visible={true}/>
+      }
+      
+    <ToastContainer position="top-right"
+      autoClose={3000} theme="dark"/>
+    </div>
+  </>
+}
