@@ -20,12 +20,6 @@ export const App = () => {
   const [gallery, setGallery] = useState([]);
   const [buttonHide, setButtonHide] = useState(0);
 
-
-  useEffect(() => {
-    console.log(inputValue);
-    setGallery([]);
-  }, [inputValue])
-
   useEffect(() => {
     if (!inputValue) {
       return;
@@ -36,7 +30,7 @@ export const App = () => {
         setIsLoading(true);
 
         const response = await axios.get(`${URL}${params}${page}&q=${inputValue}`);
-        setGallery([...gallery, ...response.data.hits]);
+        setGallery(gallery => [...gallery, ...response.data.hits]);
         const numberPageWhenButtonHide = Math.ceil(response.data.totalHits / 12);
         setButtonHide(numberPageWhenButtonHide);
 
@@ -63,6 +57,7 @@ export const App = () => {
   const handleFormSubmit = (searchValue) => {
     setInputValue(searchValue);
     setPage(1);
+    setGallery([]);
   }
 
   const onClick = (e) => {

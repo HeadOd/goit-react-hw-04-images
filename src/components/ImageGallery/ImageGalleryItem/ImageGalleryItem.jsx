@@ -6,7 +6,4 @@ export const ImageGalleryItem = ({ imgs, onClick }) => {
   </li>)}
   )}
   </>
-    
-
-  
 }
