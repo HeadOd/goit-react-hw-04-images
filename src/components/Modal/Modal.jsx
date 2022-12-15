@@ -1,11 +1,9 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
 const modalRoot = document.querySelector('#modal-root');
 
 export const Modal = ({ bigImg, onClose }) => {
-  const memoFoo = useMemo(() => handleKeyDown, [handleKeyDown])
-
   function handleKeyDown(e) {
     if (e.code === 'Escape') {
       onClose();
@@ -22,7 +20,7 @@ export const Modal = ({ bigImg, onClose }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     };
-  }, [memoFoo]);
+  }, [handleKeyDown]);
 
   return createPortal(
     <div className="overlay" onClick={handleKeyDown}>
