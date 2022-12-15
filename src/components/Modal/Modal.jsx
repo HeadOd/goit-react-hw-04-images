@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 
 const modalRoot = document.querySelector('#modal-root');
@@ -10,9 +10,9 @@ export const Modal = ({ bigImg, onClose }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     };
-  }, [handleKeyDown]);
+  }, [onClose]);
 
-  function handleKeyDown(e) {
+ function handleKeyDown(e) {
     if (e.code === 'Escape') {
       onClose();
     }
