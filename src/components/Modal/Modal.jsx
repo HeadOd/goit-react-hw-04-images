@@ -10,22 +10,20 @@ export const Modal = ({ bigImg, onClose }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     };
-  }, [])
+  }, []);
 
   const handleKeyDown = e => {
     if (e.code === 'Escape') {
       onClose();
     }
-  }
 
-  const handleBackdropClick = e => {
     if(e.currentTarget === e.target) {
       onClose();
     }
   }
 
   return createPortal(
-    <div className="overlay" onClick={handleBackdropClick}>
+    <div className="overlay" onClick={handleKeyDown}>
       <div className="modal">
         <img src={bigImg} alt="" />
       </div>
