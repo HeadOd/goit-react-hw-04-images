@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 const modalRoot = document.querySelector('#modal-root');
 
 export const Modal = ({ bigImg, onClose }) => {
-  const memoFoo = useMemo(() => handleKeyDown, [onClose])
+  const memoFoo = useMemo(() => handleKeyDown, [handleKeyDown])
 
   function handleKeyDown(e) {
     if (e.code === 'Escape') {
