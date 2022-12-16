@@ -16,7 +16,7 @@ export const Modal = ({ bigImg, onClose }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     };
-  }, []);
+  }, [onClose]);
 
   function handleTarget(e) {
     if(e.currentTarget === e.target) {
